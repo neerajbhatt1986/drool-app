@@ -1,5 +1,6 @@
 package com.synechron.visaapplication;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -10,10 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class TaxiFareConfiguration {
+public class DroolConfiguration {
     private static final String drlFile = "TAXI_FARE_RULE.drl";
 
-    @Bean
+//    @Bean
     public KieContainer kieContainer() {
         KieServices kieServices = KieServices.Factory.get();
 
