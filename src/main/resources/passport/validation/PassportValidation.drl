@@ -1,20 +1,29 @@
 package passport.validation
 
 import com.synechron.visaapplication.domain.Passport;
+import com.synechron.visaapplication.domain.Validation;
 import java.time.LocalDate;
 
-rule "Valid passport"
-  dialect "mvel"
-  when
-	Passport( !isExpired(), unusedVisaPages > 0 )
-  then
-	System.out.println("This passport is CORRECT");
+rule "Valid Passport"
+    when
+       $passport :  Passport(validation == Validation.UNKNOWN)
+    then
+        $passport.setValidation(Validation.PASSED);
+        System.out.println( ""+$passport + " Valid Passport. It is expired on  " + $passport.getExpiresOn() + " and having " +$passport.getUnusedVisaPages() + " unused pages");
+end
+rule "Expired Passport"
+    when
+         $passport :  Passport(isExpired() )
+    then
+        $passport.setValidation(Validation.FAILED);
+        System.out.println( $passport + "Expired Passport ");
 end
 
-rule "Expired or full passport"
-  dialect "mvel"
-  when
-	Passport( isExpired() || unusedVisaPages == 0 )
-  then
-	System.out.println( "This passport is INVALID because it is expired or has no space for visa" );
+rule "Full Passport"
+    when
+         $passport :  Passport(unusedVisaPages == 0)
+    then
+        $passport.setValidation(Validation.FAILED);
+        System.out.println($passport + "Full Passport");
 end
+
