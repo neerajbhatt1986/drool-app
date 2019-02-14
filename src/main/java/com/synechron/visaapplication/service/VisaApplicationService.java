@@ -16,11 +16,17 @@ public class VisaApplicationService {
 
     public void validatePassport() {
         KieContainer kieContainer = KieServices.Factory.get().getKieClasspathContainer();
-        StatelessKieSession session =  kieContainer.newStatelessKieSession("PassportValidation");
+        KieSession session =  kieContainer.newKieSession("PassportValidation");
 
         List<Passport> passportList = ApplicationRepository.getPassports();
-        session.execute(passportList);
+        passportList.forEach(session::insert);
+        session.fireAllRules();
+
+        session.dispose();
         passportList.forEach(passport -> {System.out.println("Passport: "+passport + " valid: "+passport.getValidation());});
+
+        System.out.println("========================================");
+        passportList.forEach(passport -> System.out.println(passport.getCause()));
     }
 
 }

@@ -4,18 +4,14 @@ import com.synechron.visaapplication.domain.Passport;
 import com.synechron.visaapplication.domain.Validation;
 import java.time.LocalDate;
 
-rule "Valid Passport"
-    when
-       $passport :  Passport(validation == Validation.UNKNOWN)
-    then
-        $passport.setValidation(Validation.PASSED);
-        System.out.println( ""+$passport + " Valid Passport. It is expired on  " + $passport.getExpiresOn() + " and having " +$passport.getUnusedVisaPages() + " unused pages");
-end
 rule "Expired Passport"
     when
          $passport :  Passport(isExpired() )
     then
-        $passport.setValidation(Validation.FAILED);
+        modify($passport){
+              setValidation(Validation.FAILED),
+              setCause("Expired Passport ");
+         }
         System.out.println( $passport + "Expired Passport ");
 end
 
@@ -23,7 +19,21 @@ rule "Full Passport"
     when
          $passport :  Passport(unusedVisaPages == 0)
     then
-        $passport.setValidation(Validation.FAILED);
+        modify($passport){
+            setValidation(Validation.FAILED),
+             setCause($passport + "Full Passport");
+        }
         System.out.println($passport + "Full Passport");
+end
+
+rule "Valid Passport"
+    when
+       $passport :  Passport(validation == Validation.UNKNOWN)
+    then
+        modify($passport){
+             setValidation(Validation.PASSED),
+              setCause(""+$passport + " Valid Passport. It is expired on  " + $passport.getExpiresOn() + " and having " +$passport.getUnusedVisaPages() + " unused pages");
+         }
+        System.out.println( ""+$passport + " Valid Passport. It is expired on  " + $passport.getExpiresOn() + " and having " +$passport.getUnusedVisaPages() + " unused pages");
 end
 

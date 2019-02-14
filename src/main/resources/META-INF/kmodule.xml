@@ -11,6 +11,6 @@
 
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
     <kbase packages="passport.validation">
-        <ksession name="PassportValidation" type="stateless"/>
+        <ksession name="PassportValidation"/>
     </kbase>
 </kmodule>
