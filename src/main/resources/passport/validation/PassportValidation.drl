@@ -5,6 +5,8 @@ import com.synechron.visaapplication.domain.Validation;
 import java.time.LocalDate;
 
 rule "Expired Passport"
+    //salience 60
+    agenda-group "invalid-passport"
     when
          $passport :  Passport(isExpired() )
     then
@@ -16,6 +18,8 @@ rule "Expired Passport"
 end
 
 rule "Full Passport"
+    //salience 60
+    agenda-group "invalid-passport"
     when
          $passport :  Passport(unusedVisaPages == 0)
     then
@@ -27,6 +31,8 @@ rule "Full Passport"
 end
 
 rule "Valid Passport"
+    //salience 50
+    agenda-group "valid-passport"
     when
        $passport :  Passport(validation == Validation.UNKNOWN)
     then

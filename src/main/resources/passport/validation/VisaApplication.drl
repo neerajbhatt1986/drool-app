@@ -6,6 +6,8 @@ import com.synechron.visaapplication.domain.VisaApplication;
 import java.time.LocalDate;
 
 rule "Validating Invalid Passport"
+    //salience 20
+    agenda-group "invalid-visa-application"
     when
         $passport : Passport(validation == Validation.FAILED)
         $visaApplication : VisaApplication(passportNumber == $passport.passportNumber && validation != Validation.FAILED)
@@ -18,6 +20,8 @@ rule "Validating Invalid Passport"
 end
 
 rule "Others mark valid"
+    //salience 10
+    agenda-group "valid-visa-application"
     when
           $passport : Passport(validation != Validation.FAILED)
           $visaApplication : VisaApplication( validation == Validation.UNKNOWN, passportNumber == $passport.passportNumber)
@@ -30,6 +34,8 @@ rule "Others mark valid"
 end
 
 rule "Marking failed all the visa applicaiton whose passport expiry date in not active after the trip end date + 6 month"
+    //salience 20
+    agenda-group "invalid-visa-application"
     when
           $passport : Passport()
           $visaApplication : VisaApplication(passportNumber == $passport.passportNumber, validation != Validation.FAILED, $passport.expiresOn.isBefore(visitEndDate.plusMonths(6)))

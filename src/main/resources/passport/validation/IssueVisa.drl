@@ -1,0 +1,17 @@
+package passport.validation
+
+import com.synechron.visaapplication.domain.Passport;
+import com.synechron.visaapplication.domain.Visa;
+import com.synechron.visaapplication.domain.VisaApplication;
+import com.synechron.visaapplication.domain.Validation;
+
+rule "Issue Visa"
+    //salience -10
+    agenda-group "issue-visa"
+    when
+        $visaApplication : VisaApplication(validation == Validation.PASSED)
+    then
+        Visa visa = new Visa($visaApplication.getPassportNumber());
+        System.out.println ("Issue Visa : "+visa);
+        insert(visa);
+end
