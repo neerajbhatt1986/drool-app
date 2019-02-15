@@ -1,6 +1,7 @@
 package com.synechron.visaapplication.service;
 
 import com.synechron.visaapplication.domain.Passport;
+import com.synechron.visaapplication.domain.VisaApplication;
 import com.synechron.visaapplication.repository.ApplicationRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
@@ -20,13 +21,22 @@ public class VisaApplicationService {
 
         List<Passport> passportList = ApplicationRepository.getPassports();
         passportList.forEach(session::insert);
+        List<VisaApplication> visaApplications = ApplicationRepository.getVisaApplications();
+        visaApplications.forEach(session::insert);
+
         session.fireAllRules();
 
         session.dispose();
+
+        System.out.println("--------------------------------------------");
+        System.out.println("--------------------------------------------");
+        System.out.println("--------------------------------------------");
         passportList.forEach(passport -> {System.out.println("Passport: "+passport + " valid: "+passport.getValidation());});
 
-        System.out.println("========================================");
-        passportList.forEach(passport -> System.out.println(passport.getCause()));
+        visaApplications.forEach(visaApplication -> {
+            System.out.println("Visa Application : "+visaApplication+" stats is "+visaApplication.getValidation());
+        });
+
     }
 
 }
