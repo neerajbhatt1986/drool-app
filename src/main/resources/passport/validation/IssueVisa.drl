@@ -2,16 +2,19 @@ package passport.validation
 
 import com.synechron.visaapplication.domain.Passport;
 import com.synechron.visaapplication.domain.Visa;
+import com.synechron.visaapplication.domain.Visa;
 import com.synechron.visaapplication.domain.VisaApplication;
+import com.synechron.visaapplication.domain.ValidVisaApplication;
 import com.synechron.visaapplication.domain.Validation;
 
 rule "Issue Visa"
-    //salience -10
-    agenda-group "issue-visa"
     when
-        $visaApplication : VisaApplication(validation == Validation.PASSED)
+        $visaApplication : VisaApplication()
+        $passport : Passport(this.passportNumber == $visaApplication.passportNumber)
+        not(InvalidPassport(this.passport == $passport))
+        not(InvalidVisaApplication(this.visaApplication == $visaApplication))
     then
         Visa visa = new Visa($visaApplication.getPassportNumber());
         System.out.println ("Issue Visa : "+visa);
-        insert(visa);
+        insertLogical(visa);
 end

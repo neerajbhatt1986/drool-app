@@ -2,44 +2,25 @@ package passport.validation
 
 import com.synechron.visaapplication.domain.Passport;
 import com.synechron.visaapplication.domain.Validation;
+import com.synechron.visaapplication.domain.ValidPassport;
+import com.synechron.visaapplication.domain.InvalidPassport;
 import java.time.LocalDate;
 
 rule "Expired Passport"
-    //salience 60
-    agenda-group "invalid-passport"
     when
          $passport :  Passport(isExpired() )
     then
-        modify($passport){
-              setValidation(Validation.FAILED),
-              setCause("Expired Passport ");
-         }
+        insert(new InvalidPassport($passport));
         System.out.println( $passport + "Expired Passport ");
 end
 
 rule "Full Passport"
-    //salience 60
-    agenda-group "invalid-passport"
     when
          $passport :  Passport(unusedVisaPages == 0)
     then
-        modify($passport){
-            setValidation(Validation.FAILED),
-             setCause($passport + "Full Passport");
-        }
+         insert(new InvalidPassport($passport));
         System.out.println($passport + "Full Passport");
 end
 
-rule "Valid Passport"
-    //salience 50
-    agenda-group "valid-passport"
-    when
-       $passport :  Passport(validation == Validation.UNKNOWN)
-    then
-        modify($passport){
-             setValidation(Validation.PASSED),
-              setCause(""+$passport + " Valid Passport. It is expired on  " + $passport.getExpiresOn() + " and having " +$passport.getUnusedVisaPages() + " unused pages");
-         }
-        System.out.println( ""+$passport + " Valid Passport. It is expired on  " + $passport.getExpiresOn() + " and having " +$passport.getUnusedVisaPages() + " unused pages");
-end
+
 

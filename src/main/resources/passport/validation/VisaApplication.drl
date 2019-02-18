@@ -1,51 +1,27 @@
 package passport.validation
 
 import com.synechron.visaapplication.domain.Passport;
+import com.synechron.visaapplication.domain.ValidPassport;
+import com.synechron.visaapplication.domain.InvalidPassport;
 import com.synechron.visaapplication.domain.Validation;
 import com.synechron.visaapplication.domain.VisaApplication;
+import com.synechron.visaapplication.domain.InvalidVisaApplication;
+import com.synechron.visaapplication.domain.ValidVisaApplication;
 import java.time.LocalDate;
 
-rule "Validating Invalid Passport"
-    //salience 20
-    agenda-group "invalid-visa-application"
-    when
-        $passport : Passport(validation == Validation.FAILED)
-        $visaApplication : VisaApplication(passportNumber == $passport.passportNumber && validation != Validation.FAILED)
-    then
-        modify($visaApplication){
-            setValidation(Validation.FAILED)
-        }
-
-        System.out.println("Visa Application "+$visaApplication+"is Failed because passport "+$passport+"is invalid "+$passport.getCause());
-end
-
-rule "Others mark valid"
-    //salience 10
-    agenda-group "valid-visa-application"
-    when
-          $passport : Passport(validation != Validation.FAILED)
-          $visaApplication : VisaApplication( validation == Validation.UNKNOWN, passportNumber == $passport.passportNumber)
-    then
-            modify($visaApplication){
-                setValidation(Validation.PASSED)
-            }
-            System.out.println("Valid Visa Application : " + $visaApplication);
-
-end
-
 rule "Marking failed all the visa applicaiton whose passport expiry date in not active after the trip end date + 6 month"
-    //salience 20
-    agenda-group "invalid-visa-application"
     when
-          $passport : Passport()
-          $visaApplication : VisaApplication(passportNumber == $passport.passportNumber, validation != Validation.FAILED, $passport.expiresOn.isBefore(visitEndDate.plusMonths(6)))
+      $passport: Passport()
+    	  not( InvalidPassport( this.passport == $passport) )
+          $visaApplication : VisaApplication(passportNumber == $passport.passportNumber, $passport.expiresOn.isBefore(visitEndDate.plusMonths(6)))
     then
-            modify($visaApplication){
-                setValidation(Validation.FAILED)
-            }
+            insert(new InvalidVisaApplication($visaApplication));
             System.out.println("Invalid Visa Application : " + $visaApplication+". Passport is not active after the 6 moth of the trip end date");
 
 end
+
+
+
 
 
 

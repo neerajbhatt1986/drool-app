@@ -1,8 +1,6 @@
 package com.synechron.visaapplication.service;
 
-import com.synechron.visaapplication.domain.Passport;
-import com.synechron.visaapplication.domain.Visa;
-import com.synechron.visaapplication.domain.VisaApplication;
+import com.synechron.visaapplication.domain.*;
 import com.synechron.visaapplication.repository.ApplicationRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
@@ -40,13 +38,21 @@ public class VisaApplicationService {
         System.out.println("--------------------------------------------");
         System.out.println("--------------------------------------------");
         System.out.println("--------------------------------------------");
-        passportList.forEach(passport -> {System.out.println("Passport: "+passport + " valid: "+passport.getValidation());});
+        /*passportList.forEach(passport -> {System.out.println("Passport: "+passport + " valid: "+passport.getValidation());});
 
         visaApplications.forEach(visaApplication -> {
             System.out.println("Visa Application : "+visaApplication+" stats is "+visaApplication.getValidation());
-        });
+        });*/
 
 
+        System.out.println("Invalid visa Applicaiton");
+       session.getObjects(o -> o.getClass() == InvalidVisaApplication.class).forEach(System.out::println);
+        System.out.println("Valid visa Applicaiton");
+        session.getObjects(o -> o.getClass() == ValidVisaApplication.class).forEach(System.out::println);
+        System.out.println("Valid Passprot");
+       session.getObjects(o -> o.getClass() == ValidPassport.class).forEach(System.out::println);
+        System.out.println("Invalid Passprot");
+       session.getObjects(o -> o.getClass() == InvalidPassport.class).forEach(System.out::println);
         System.out.println("Visa from the session");
        session.getObjects(o -> o.getClass() == Visa.class).forEach(System.out::println);
 
